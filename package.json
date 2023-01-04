@@ -1,8 +1,22 @@
 {
     "name": "connordoman-ts-db",
-    "version": "0.1.1",
+    "version": "0.1.2",
+    "private": true,
+    "description": "A simple database connection library for TypeScript",
+    "license": "UNLICENSED",
+    "scripts": {
+        "build": "tsc",
+        "watch": "tsc -w",
+        "prepare": "npm run build"
+    },
     "dependencies": {
         "@types/node": "^18.11.18",
         "mysql2": "^2.3.3"
-    }
+    },
+    "devDependencies": {
+        "typescript": "^4.9.4"
+    },
+    "files": [
+        "lib/**/*"
+    ]
 }
