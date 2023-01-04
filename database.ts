@@ -12,7 +12,7 @@ export const WEEK_MS = DAY_MS * 7;
 export const MONTH_MS = DAY_MS * 30;
 export const YEAR_MS = DAY_MS * 365;
 
-export const DB_CONFIG: mysql.PoolOptions = {
+const DB_CONFIG: mysql.PoolOptions = {
     host: process.env.MYSQL_HOST,
     user: process.env.MYSQL_USER,
     password: process.env.MYSQL_PASSWORD,
