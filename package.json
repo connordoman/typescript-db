@@ -1,6 +1,6 @@
 {
     "name": "connordoman-ts-db",
-    "version": "0.1.0",
+    "version": "0.1.1",
     "dependencies": {
         "@types/node": "^18.11.18",
         "mysql2": "^2.3.3"
