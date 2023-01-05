@@ -54,7 +54,7 @@ export class Database {
 
         this.pool = mysql.createPool(this.getDBConfig());
 
-        if (this.pool) console.log(`Connected to MySQL database: '${this.database}'`);
+        if (this.pool) console.log(`Connected to MySQL database with config: '${JSON.stringify(DB_CONFIG, null, 4)}'`);
     }
 
     getDBConfig = (): mysql.PoolOptions => {
