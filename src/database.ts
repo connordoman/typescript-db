@@ -26,7 +26,7 @@ export class Database {
     host: string | undefined;
     user: string | undefined;
     password: string | undefined;
-    // database: string | undefined;
+    database: string | undefined;
     waitForConnections: boolean | undefined;
     connectionLimit: number | undefined;
     queueLimit: number | undefined;
@@ -38,7 +38,7 @@ export class Database {
             this.host = options.host;
             this.user = options.user;
             this.password = options.password;
-            // this.database = options.database;
+            this.database = options.database;
             this.waitForConnections = options.waitForConnections;
             this.connectionLimit = options.connectionLimit;
             this.queueLimit = options.queueLimit;
