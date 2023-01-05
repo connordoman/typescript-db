@@ -16,7 +16,7 @@ export const DB_CONFIG = {
     host: process.env.MYSQL_HOST,
     user: process.env.MYSQL_USER,
     password: process.env.MYSQL_PASSWORD,
-    database: process.env.MYSQL_DATABASE,
+    // database: process.env.MYSQL_DATABASE,
     waitForConnections: true,
     connectionLimit: 10,
     queueLimit: 0,
@@ -26,7 +26,7 @@ export class Database {
     host: string | undefined;
     user: string | undefined;
     password: string | undefined;
-    database: string | undefined;
+    // database: string | undefined;
     waitForConnections: boolean | undefined;
     connectionLimit: number | undefined;
     queueLimit: number | undefined;
@@ -38,7 +38,7 @@ export class Database {
             this.host = options.host;
             this.user = options.user;
             this.password = options.password;
-            this.database = options.database;
+            // this.database = options.database;
             this.waitForConnections = options.waitForConnections;
             this.connectionLimit = options.connectionLimit;
             this.queueLimit = options.queueLimit;
@@ -46,7 +46,7 @@ export class Database {
             this.host = DB_CONFIG.host;
             this.user = DB_CONFIG.user;
             this.password = DB_CONFIG.password;
-            this.database = DB_CONFIG.database;
+            // this.database = DB_CONFIG.database;
             this.waitForConnections = DB_CONFIG.waitForConnections;
             this.connectionLimit = DB_CONFIG.connectionLimit;
             this.queueLimit = DB_CONFIG.queueLimit;
@@ -62,7 +62,7 @@ export class Database {
             host: this.host,
             user: this.user,
             password: this.password,
-            database: this.database,
+            // database: this.database,
             waitForConnections: this.waitForConnections,
             connectionLimit: this.connectionLimit,
             queueLimit: this.queueLimit,
@@ -157,6 +157,7 @@ export type ContactMessage = {
 export class MessageDatabase extends Database {
     constructor(options?: mysql.PoolOptions) {
         super(options);
+        this.query("USE message;");
     }
 
     insertMessage = async (message: ContactMessage): Promise<boolean> => {
@@ -228,6 +229,7 @@ export class MessageDatabase extends Database {
 export class XmasDatabase extends Database {
     constructor(options?: mysql.PoolOptions) {
         super(options);
+        this.query("USE xmas;");
     }
 
     getAllRecipients = async (): Promise<any> => {
