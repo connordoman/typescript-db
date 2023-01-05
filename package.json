@@ -7,7 +7,8 @@
     "scripts": {
         "build": "tsc",
         "watch": "tsc -w",
-        "prepare": "npm run build"
+        "prepare": "npm run build",
+        "test": "npm run prepare && node ./test/test.js"
     },
     "dependencies": {
         "@types/node": "^18.11.18",
@@ -18,5 +19,6 @@
     },
     "files": [
         "lib/**/*"
-    ]
+    ],
+    "type": "module"
 }

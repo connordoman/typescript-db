@@ -16,7 +16,7 @@ export const DB_CONFIG = {
     host: process.env.MYSQL_HOST,
     user: process.env.MYSQL_USER,
     password: process.env.MYSQL_PASSWORD,
-    // database: process.env.MYSQL_DATABASE,
+    database: process.env.MYSQL_DATABASE,
     waitForConnections: true,
     connectionLimit: 10,
     queueLimit: 0,
@@ -46,7 +46,7 @@ export class Database {
             this.host = DB_CONFIG.host;
             this.user = DB_CONFIG.user;
             this.password = DB_CONFIG.password;
-            // this.database = DB_CONFIG.database;
+            this.database = DB_CONFIG.database;
             this.waitForConnections = DB_CONFIG.waitForConnections;
             this.connectionLimit = DB_CONFIG.connectionLimit;
             this.queueLimit = DB_CONFIG.queueLimit;
