@@ -156,7 +156,7 @@ export type ContactMessage = {
 
 export class MessageDatabase extends Database {
     constructor(options?: mysql.PoolOptions) {
-        super({ ...DB_CONFIG, database: "messages", ...options });
+        super({ ...DB_CONFIG, database: "message" });
     }
 
     insertMessage = async (message: ContactMessage): Promise<boolean> => {
@@ -228,6 +228,7 @@ export class MessageDatabase extends Database {
 export class XmasDatabase extends Database {
     constructor() {
         super({ ...DB_CONFIG, database: "xmas" });
+        console.log("Set up xmas database with config: ", JSON.stringify({ ...DB_CONFIG, database: "xmas" }, null, 4));
     }
 
     getAllRecipients = async (): Promise<any> => {
