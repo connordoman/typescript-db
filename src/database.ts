@@ -62,7 +62,7 @@ export class Database {
             host: this.host,
             user: this.user,
             password: this.password,
-            // database: this.database,
+            database: this.database,
             waitForConnections: this.waitForConnections,
             connectionLimit: this.connectionLimit,
             queueLimit: this.queueLimit,
