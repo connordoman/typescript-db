@@ -176,8 +176,8 @@ export class MessageDatabase extends Database {
             message.messageText,
             message.ipAddress,
         ];
-        let [rows] = await this.query(query, values);
-        return rows.length > 0;
+        let result = await this.query(query, values);
+        return result && result.affectedRows > 0;
     };
 
     getTimeSinceEmailLastSent = async (email: string): Promise<number> => {
