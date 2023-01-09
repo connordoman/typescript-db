@@ -12,7 +12,7 @@ export const WEEK_MS = DAY_MS * 7;
 export const MONTH_MS = DAY_MS * 30;
 export const YEAR_MS = DAY_MS * 365;
 
-export const DB_CONFIG = {
+export const DB_CONFIG: mysql.PoolOptions = {
     host: process.env.MYSQL_HOST,
     user: process.env.MYSQL_USER,
     password: process.env.MYSQL_PASSWORD,
@@ -54,7 +54,8 @@ export class Database {
 
         this.pool = mysql.createPool(this.getDBConfig());
 
-        if (this.pool) console.log(`Connected to MySQL database with config: '${JSON.stringify(DB_CONFIG, null, 4)}'`);
+        if (this.pool)
+            console.log(`Connected to MySQL database with config: '${JSON.stringify(this.getDBConfig(), null, 4)}'`);
     }
 
     getDBConfig = (): mysql.PoolOptions => {
@@ -116,9 +117,9 @@ export class Database {
             }
         } catch (err: any) {
             console.error(`Error in database.query: ${err}`);
-            return undefined;
+            return [];
         }
-        return undefined;
+        return [];
     };
 
     startTransaction = async (pool?: mysql.Pool): Promise<boolean> => {
@@ -155,8 +156,8 @@ export type ContactMessage = {
 };
 
 export class MessageDatabase extends Database {
-    constructor() {
-        super({ ...DB_CONFIG, database: "message" });
+    constructor(options?: mysql.PoolOptions) {
+        super(options ? options : { ...DB_CONFIG, database: "message" });
     }
 
     insertMessage = async (message: ContactMessage): Promise<boolean> => {
