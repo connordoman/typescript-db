@@ -4,13 +4,13 @@
  */
 import * as mysql from "mysql2/promise";
 
-export const MINUTE_MS = 1000 * 60; // 60,000ms
-export const HOUR_MS = MINUTE_MS * 60;
-export const HALF_HOUR_MS = HOUR_MS / 2;
-export const DAY_MS = HOUR_MS * 24;
-export const WEEK_MS = DAY_MS * 7;
-export const MONTH_MS = DAY_MS * 30;
-export const YEAR_MS = DAY_MS * 365;
+export const MINUTE_S = 60;
+export const HOUR_S = MINUTE_S * 60;
+export const HALF_HOUR_S = HOUR_S / 2;
+export const DAY_S = HOUR_S * 24;
+export const WEEK_S = DAY_S * 7;
+export const MONTH_S = DAY_S * 30;
+export const YEAR_S = DAY_S * 365;
 
 export const DB_CONFIG: mysql.PoolOptions = {
     host: process.env.MYSQL_HOST,
@@ -169,25 +169,24 @@ export class MessageDatabase extends Database {
             message.email,
             message.messageSubject,
             message.messageText,
-            // message.submitTime,
             message.ipAddress,
         ];
         let [rows] = await this.query(query, values);
         return rows.length > 0;
     };
 
-    getLastMessageTimeByEmail = async (email: string): Promise<number> => {
-        let query = "SELECT submitTime FROM message WHERE email = ? ORDER BY submitTime DESC LIMIT 1";
+    getTimeSinceEmailLastSent = async (email: string): Promise<number> => {
+        let query = "SELECT NOW() - submitTime FROM message WHERE email = ? ORDER BY submitTime DESC LIMIT 1";
         let values = [email];
         let [rows] = await this.query(query, values);
         if (rows && rows.length > 0) {
             let date = new Date(rows[0].submitTime);
             return date.getTime();
         }
-        return HALF_HOUR_MS;
+        return HALF_HOUR_S;
     };
 
-    getLastMessageTimeByIpAddress = async (ipAddress: string): Promise<number> => {
+    getTimeSinceIPLastSent = async (ipAddress: string): Promise<number> => {
         let query = "SELECT submitTime FROM message WHERE ipAddress = ? ORDER BY submitTime DESC LIMIT 1";
         let values = [ipAddress];
         let [rows] = await this.query(query, values);
@@ -195,24 +194,20 @@ export class MessageDatabase extends Database {
             let date = new Date(rows[0].submitTime);
             return date.getTime();
         }
-        return MINUTE_MS * 5;
+        return MINUTE_S * 5;
     };
 
     canSendMessage = async (email: string, ipAddress: string): Promise<boolean> => {
         // get email time
         // SELECT submitTime FROM message WHERE email = ? ORDER BY submitTime DESC LIMIT 1
-        let emailTime = await this.getLastMessageTimeByEmail(email);
+        let emailTime = await this.getTimeSinceEmailLastSent(email);
         // get ip time
         // SELECT submitTime FROM message WHERE ipAddress = ? ORDER BY submitTime DESC LIMIT 1
-        let ipTime = await this.getLastMessageTimeByIpAddress(ipAddress);
+        let ipTime = await this.getTimeSinceIPLastSent(ipAddress);
 
         let now = Date.now();
 
-        if (now - emailTime > HALF_HOUR_MS) {
-            return true;
-        }
-
-        if (now - ipTime > MINUTE_MS * 5) {
+        if (emailTime > HALF_HOUR_S && ipTime > MINUTE_S * 5) {
             return true;
         }
 
