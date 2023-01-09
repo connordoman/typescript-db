@@ -162,14 +162,14 @@ export class MessageDatabase extends Database {
 
     insertMessage = async (message: ContactMessage): Promise<boolean> => {
         let query =
-            "INSERT INTO message (firstName, lastName, email, messageSubject, messageText, submitTime, ipAddress) VALUES (?, ?, ?, ?, ?, DATETIME(?), ?);";
+            "INSERT INTO message (firstName, lastName, email, messageSubject, messageText, submitTime, ipAddress) VALUES (?, ?, ?, ?, ?, NOW(), ?);";
         let values = [
             message.firstName,
             message.lastName,
             message.email,
             message.messageSubject,
             message.messageText,
-            message.submitTime,
+            // message.submitTime,
             message.ipAddress,
         ];
         let [rows] = await this.query(query, values);
