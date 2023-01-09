@@ -8,11 +8,10 @@
         "build": "tsc",
         "watch": "tsc -w",
         "prepare": "npm run build",
-        "test": "npm run prepare && node -r esm ./test/test.js"
+        "test": "npm run prepare && node ./test/test.js"
     },
     "dependencies": {
         "@types/node": "^18.11.18",
-        "esm": "^3.2.25",
         "mysql2": "^2.3.3"
     },
     "devDependencies": {
