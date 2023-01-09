@@ -1,6 +1,6 @@
 {
     "name": "connordoman-ts-db",
-    "version": "0.1.2",
+    "version": "0.1.3",
     "private": true,
     "description": "A simple database connection library for TypeScript",
     "license": "UNLICENSED",

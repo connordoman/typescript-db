@@ -4,13 +4,13 @@
  */
 import * as mysql from "mysql2/promise";
 
-export const MINUTE_S = 60;
-export const HOUR_S = MINUTE_S * 60;
-export const HALF_HOUR_S = HOUR_S / 2;
-export const DAY_S = HOUR_S * 24;
-export const WEEK_S = DAY_S * 7;
-export const MONTH_S = DAY_S * 30;
-export const YEAR_S = DAY_S * 365;
+export const MINUTE_S = 60; // 60s
+export const HOUR_S = MINUTE_S * 60; // 3600s
+export const HALF_HOUR_S = HOUR_S / 2; // 1800s
+export const DAY_S = HOUR_S * 24; // 86400s
+export const WEEK_S = DAY_S * 7; // 604800s
+export const MONTH_S = DAY_S * 30; // 2592000s
+export const YEAR_S = DAY_S * 365; // 946080000s
 
 export const DB_CONFIG: mysql.PoolOptions = {
     host: process.env.MYSQL_HOST,
@@ -54,8 +54,8 @@ export class Database {
 
         this.pool = mysql.createPool(this.getDBConfig());
 
-        if (this.pool)
-            console.log(`Connected to MySQL database with config: '${JSON.stringify(this.getDBConfig(), null, 4)}'`);
+        // if (this.pool)
+        //     console.log(`Connected to MySQL database with config: '${JSON.stringify(this.getDBConfig(), null, 4)}'`);
     }
 
     getDBConfig = (): mysql.PoolOptions => {
@@ -155,6 +155,11 @@ export type ContactMessage = {
     ipAddress?: string;
 };
 
+export type SendStatus = {
+    canSend: boolean;
+    waitTime?: number;
+};
+
 export class MessageDatabase extends Database {
     constructor(options?: mysql.PoolOptions) {
         super(options ? options : { ...DB_CONFIG, database: "contact" });
@@ -176,28 +181,30 @@ export class MessageDatabase extends Database {
     };
 
     getTimeSinceEmailLastSent = async (email: string): Promise<number> => {
-        let query = "SELECT NOW() - submitTime FROM message WHERE email = ? ORDER BY submitTime DESC LIMIT 1";
+        let query =
+            "SELECT NOW() - submitTime AS timeSince FROM message WHERE email = ? ORDER BY submitTime DESC LIMIT 1";
         let values = [email];
         let [rows] = await this.query(query, values);
-        if (rows && rows.length > 0) {
-            let date = new Date(rows[0].submitTime);
-            return date.getTime();
+        if (rows) {
+            return rows.timeSince;
         }
+        console.log(`No messages found for email: ${email}`);
         return HALF_HOUR_S;
     };
 
     getTimeSinceIPLastSent = async (ipAddress: string): Promise<number> => {
-        let query = "SELECT submitTime FROM message WHERE ipAddress = ? ORDER BY submitTime DESC LIMIT 1";
+        let query =
+            "SELECT NOW() - submitTime AS timeSince FROM message WHERE ipAddress = ? ORDER BY submitTime DESC LIMIT 1";
         let values = [ipAddress];
         let [rows] = await this.query(query, values);
-        if (rows && rows.length > 0) {
-            let date = new Date(rows[0].submitTime);
-            return date.getTime();
+        if (rows) {
+            return rows.timeSince;
         }
+        console.log(`No messages found for ip: ${ipAddress}`);
         return MINUTE_S * 5;
     };
 
-    canSendMessage = async (email: string, ipAddress: string): Promise<boolean> => {
+    canSendMessage = async (email: string, ipAddress: string): Promise<SendStatus> => {
         // get email time
         // SELECT submitTime FROM message WHERE email = ? ORDER BY submitTime DESC LIMIT 1
         let emailTime = await this.getTimeSinceEmailLastSent(email);
@@ -205,13 +212,24 @@ export class MessageDatabase extends Database {
         // SELECT submitTime FROM message WHERE ipAddress = ? ORDER BY submitTime DESC LIMIT 1
         let ipTime = await this.getTimeSinceIPLastSent(ipAddress);
 
-        let now = Date.now();
+        console.log(`emailTime: ${emailTime}\nipTime: ${ipTime}`);
 
-        if (emailTime > HALF_HOUR_S && ipTime > MINUTE_S * 5) {
-            return true;
+        if (emailTime < HALF_HOUR_S) {
+            console.log("emailTime < HALF_HOUR_S");
+            return {
+                canSend: false,
+                waitTime: HALF_HOUR_S - emailTime,
+            };
+        }
+        if (ipTime < MINUTE_S * 5) {
+            console.log("ipTime < MINUTE_S * 5");
+            return {
+                canSend: false,
+                waitTime: MINUTE_S * 5 - ipTime,
+            };
         }
 
-        return false;
+        return { canSend: true };
     };
 
     getAllMessages = async (): Promise<ContactMessage[]> => {

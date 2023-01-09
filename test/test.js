@@ -16,7 +16,13 @@ const messageDatabase = new MessageDatabase({
 });
 
 // test db functionality
-(async () => {
-    const messages = await messageDatabase.getAllMessages();
-    console.log(JSON.stringify(messages, null, 4));
-})();
+const testMessageDB = async () => {
+    const { canSend, waitTime } = await messageDatabase.canSendMessage("c.doman@me.com", "::1");
+    if (!canSend && waitTime) {
+        console.log(`CAN'T send message, wait ${status.waitTime} seconds`);
+    } else {
+        console.log("CAN send message");
+    }
+};
+
+testMessageDB();
