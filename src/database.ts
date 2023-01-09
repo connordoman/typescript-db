@@ -150,8 +150,8 @@ export type ContactMessage = {
     email: string;
     messageSubject: string;
     messageText: string;
-    submitTime: number;
-    ipAddress: string;
+    submitTime?: number;
+    ipAddress?: string;
 };
 
 export class MessageDatabase extends Database {
