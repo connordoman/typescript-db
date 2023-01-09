@@ -157,7 +157,7 @@ export type ContactMessage = {
 
 export class MessageDatabase extends Database {
     constructor(options?: mysql.PoolOptions) {
-        super(options ? options : { ...DB_CONFIG, database: "message" });
+        super(options ? options : { ...DB_CONFIG, database: "contact" });
     }
 
     insertMessage = async (message: ContactMessage): Promise<boolean> => {
