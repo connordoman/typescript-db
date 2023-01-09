@@ -1,4 +1,4 @@
-import { XmasDatabase } from "../lib/database.js";
+import { MessageDatabase } from "../lib/database.js";
 
-const xmasDatabase = new XmasDatabase();
-// const messageDatabase = new MessageDatabase();
+// const xmasDatabase = new XmasDatabase();
+const messageDatabase = new MessageDatabase();
