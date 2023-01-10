@@ -167,7 +167,7 @@ export class MessageDatabase extends Database {
 
     insertMessage = async (message: ContactMessage): Promise<boolean> => {
         let query =
-            "INSERT INTO message (firstName, lastName, email, messageSubject, messageText, submitTime, ipAddress) VALUES (?, ?, ?, ?, ?, NOW(), ?);";
+            "INSERT INTO message (firstName, lastName, email, messageSubject, messageText, submitTime, ipAddress) VALUES (?, ?, ?, ?, ?, CONVERT_TZ(NOW(),'SYSTEM','America/Vancouver'), ?);";
         let values = [
             message.firstName,
             message.lastName,
@@ -236,5 +236,21 @@ export class MessageDatabase extends Database {
         let query = "SELECT * FROM message ORDER BY submitTime DESC;";
         let rows = await this.query(query);
         return rows;
+    };
+
+    deleteMessage = async (email: string, ipAddress: string, submitTime: string): Promise<boolean> => {
+        try {
+            let query = "DELETE FROM message WHERE email = ? AND ipAddress = ? AND submitTime LIKE ?;";
+            let values = [email, ipAddress, submitTime];
+
+            let result = await this.query(query, values);
+
+            if (result) {
+                return result.affectedRows === 1;
+            }
+        } catch (err: any) {
+            console.error(err.message);
+        }
+        return false;
     };
 }
