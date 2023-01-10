@@ -19,9 +19,14 @@ const messageDatabase = new MessageDatabase({
 const testMessageDB = async () => {
     const { canSend, waitTime } = await messageDatabase.canSendMessage("c.doman@me.com", "::1");
     if (!canSend && waitTime) {
-        console.log(`CAN'T send message, wait ${status.waitTime} seconds`);
+        console.log(`CAN'T send message, wait ${waitTime} seconds (${waitTime / 60} minutes)`);
     } else {
         console.log("CAN send message");
+    }
+
+    const allMessages = await messageDatabase.getAllMessages();
+    if (allMessages) {
+        console.log(JSON.stringify(allMessages, null, 4));
     }
 };
 

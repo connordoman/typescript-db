@@ -151,7 +151,7 @@ export type ContactMessage = {
     email: string;
     messageSubject: string;
     messageText: string;
-    submitTime?: number;
+    submitTime?: string;
     ipAddress?: string;
 };
 
