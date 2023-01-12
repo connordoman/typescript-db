@@ -235,13 +235,18 @@ export class MessageDatabase extends Database {
     getAllMessages = async (): Promise<ContactMessage[]> => {
         let query = "SELECT * FROM message ORDER BY submitTime DESC;";
         let rows = await this.query(query);
+
+        for (let r of rows) {
+            r.submitTime = r.submitTime.replaceAll("T", " ").replaceAll("Z", "");
+        }
+
         return rows;
     };
 
     deleteMessage = async (email: string, ipAddress: string, submitTime: string): Promise<boolean> => {
         try {
             let query = "DELETE FROM message WHERE email = ? AND ipAddress = ? AND submitTime LIKE ?;";
-            let values = [email, ipAddress, submitTime];
+            let values = [email, ipAddress, `%${submitTime}%`];
 
             let result = await this.query(query, values);
 
