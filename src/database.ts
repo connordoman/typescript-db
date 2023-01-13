@@ -20,6 +20,7 @@ export const DB_CONFIG: mysql.PoolOptions = {
     waitForConnections: true,
     connectionLimit: 10,
     queueLimit: 0,
+    timezone: "SYSTEM",
 };
 
 export class Database {
@@ -30,6 +31,7 @@ export class Database {
     waitForConnections: boolean | undefined;
     connectionLimit: number | undefined;
     queueLimit: number | undefined;
+    timezone: string | undefined;
     pool: mysql.Pool;
     connection: mysql.Connection | undefined = undefined;
 
@@ -42,6 +44,7 @@ export class Database {
             this.waitForConnections = options.waitForConnections;
             this.connectionLimit = options.connectionLimit;
             this.queueLimit = options.queueLimit;
+            this.timezone = options.timezone;
         } else {
             this.host = DB_CONFIG.host;
             this.user = DB_CONFIG.user;
@@ -50,6 +53,7 @@ export class Database {
             this.waitForConnections = DB_CONFIG.waitForConnections;
             this.connectionLimit = DB_CONFIG.connectionLimit;
             this.queueLimit = DB_CONFIG.queueLimit;
+            this.timezone = DB_CONFIG.timezone;
         }
 
         this.pool = mysql.createPool(this.getDBConfig());
@@ -67,6 +71,7 @@ export class Database {
             waitForConnections: this.waitForConnections,
             connectionLimit: this.connectionLimit,
             queueLimit: this.queueLimit,
+            timezone: this.timezone,
         };
     }
 
