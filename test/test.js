@@ -13,6 +13,7 @@ const messageDatabase = new MessageDatabase({
     waitForConnections: true,
     connectionLimit: 10,
     queueLimit: 0,
+    timezone: "-08:00",
 });
 
 // test db functionality
@@ -26,7 +27,7 @@ const testMessageDB = async () => {
 
     const allMessages = await messageDatabase.getAllMessages();
     if (allMessages) {
-        console.log(JSON.stringify(allMessages, null, 4));
+        //console.log(JSON.stringify(allMessages, null, 4));
     }
 };
 
