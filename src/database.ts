@@ -187,8 +187,8 @@ export class MessageDatabase extends Database {
 
     async deleteMessage(email: string, ipAddress: string, submitTime: string): Promise<boolean> {
         try {
-            let query = "DELETE FROM message WHERE email = ? AND ipAddress = ? AND submitTime LIKE ?;";
-            let values = [email, ipAddress, `%${submitTime}%`];
+            let query = "DELETE FROM message WHERE email = ? AND ipAddress = ? AND submitTime = ?;";
+            let values = [email, ipAddress, submitTime];
 
             let result = await this.query(query, values);
 
