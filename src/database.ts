@@ -192,6 +192,8 @@ export class MessageDatabase extends Database {
 
             let result = await this.query(query, values);
 
+            console.log(`Deleting with query: ${result.query}`);
+
             if (result) {
                 return result.affectedRows === 1;
             }
