@@ -254,7 +254,7 @@ export class MessageDatabase extends Database {
                 return result.affectedRows === 1;
             }
         } catch (err: any) {
-            console.error(err.message);
+            console.error("Error in MessageDatabase.deleteMessage: " + err.message);
         }
         return false;
     };
