@@ -252,10 +252,6 @@ export class MessageDatabase extends Database {
         let query = "SELECT * FROM message ORDER BY submitTime DESC;";
         let rows = await this.query(query);
 
-        for (let r of rows) {
-            r.submitTime = r.submitTime.replaceAll("T", " ").replaceAll("Z", "");
-        }
-
         return rows;
     }
 }
