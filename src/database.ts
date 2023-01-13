@@ -58,7 +58,7 @@ export class Database {
         //     console.log(`Connected to MySQL database with config: '${JSON.stringify(this.getDBConfig(), null, 4)}'`);
     }
 
-    getDBConfig = (): mysql.PoolOptions => {
+    getDBConfig(): mysql.PoolOptions {
         return {
             host: this.host,
             user: this.user,
@@ -68,9 +68,9 @@ export class Database {
             connectionLimit: this.connectionLimit,
             queueLimit: this.queueLimit,
         };
-    };
+    }
 
-    getConnection = async (pool?: mysql.Pool): Promise<mysql.Connection | undefined> => {
+    async getConnection(pool?: mysql.Pool): Promise<mysql.Connection | undefined> {
         try {
             let conn: mysql.Connection;
 
@@ -87,25 +87,25 @@ export class Database {
             return undefined;
         }
         return this.connection;
-    };
+    }
 
-    createConnection = async (pool?: mysql.Pool): Promise<mysql.Connection> => {
+    async createConnection(pool?: mysql.Pool): Promise<mysql.Connection> {
         if (pool) {
             this.connection = await pool.getConnection();
         }
         this.connection = await this.pool.getConnection();
         return this.connection;
-    };
+    }
 
-    close = async (): Promise<void> => {
+    async close(): Promise<void> {
         if (this.connection) {
             await this.connection.end();
             this.connection = undefined;
         }
         await this.pool.end();
-    };
+    }
 
-    query = async (query: string, values?: any[]): Promise<any> => {
+    async query(query: string, values?: any[]): Promise<any> {
         try {
             let conn: mysql.Connection | undefined = await this.getConnection();
             if (conn) {
@@ -120,18 +120,18 @@ export class Database {
             return [];
         }
         return [];
-    };
+    }
 
-    startTransaction = async (pool?: mysql.Pool): Promise<boolean> => {
+    async startTransaction(pool?: mysql.Pool): Promise<boolean> {
         let conn = await this.getConnection(pool);
         if (conn) {
             await conn.beginTransaction();
             return true;
         }
         return false;
-    };
+    }
 
-    commitTransaction = async (): Promise<boolean> => {
+    async commitTransaction(): Promise<boolean> {
         let conn = await this.getConnection();
         if (conn) {
             await conn.commit();
@@ -140,7 +140,7 @@ export class Database {
             return true;
         }
         return false;
-    };
+    }
 }
 
 // messages database
@@ -165,7 +165,7 @@ export class MessageDatabase extends Database {
         super(options ? options : { ...DB_CONFIG, database: "contact" });
     }
 
-    insertMessage = async (message: ContactMessage): Promise<boolean> => {
+    async nsertMessage(message: ContactMessage): Promise<boolean> {
         let query =
             "INSERT INTO message (firstName, lastName, email, messageSubject, messageText, submitTime, ipAddress) VALUES (?, ?, ?, ?, ?, CONVERT_TZ(NOW(),'SYSTEM','America/Vancouver'), ?);";
         let values = [
@@ -178,9 +178,9 @@ export class MessageDatabase extends Database {
         ];
         let result = await this.query(query, values);
         return result && result.affectedRows > 0;
-    };
+    }
 
-    getTimeSinceEmailLastSent = async (email: string): Promise<number> => {
+    async getTimeSinceEmailLastSent(email: string): Promise<number> {
         let query =
             "SELECT NOW() - submitTime AS timeSince FROM message WHERE email = ? ORDER BY submitTime DESC LIMIT 1";
         let values = [email];
@@ -190,9 +190,9 @@ export class MessageDatabase extends Database {
         }
         console.log(`No messages found for email: ${email}`);
         return HALF_HOUR_S;
-    };
+    }
 
-    getTimeSinceIPLastSent = async (ipAddress: string): Promise<number> => {
+    async getTimeSinceIPLastSent(ipAddress: string): Promise<number> {
         let query =
             "SELECT NOW() - submitTime AS timeSince FROM message WHERE ipAddress = ? ORDER BY submitTime DESC LIMIT 1";
         let values = [ipAddress];
@@ -202,9 +202,9 @@ export class MessageDatabase extends Database {
         }
         console.log(`No messages found for ip: ${ipAddress}`);
         return MINUTE_S * 5;
-    };
+    }
 
-    canSendMessage = async (email: string, ipAddress: string): Promise<SendStatus> => {
+    async canSendMessage(email: string, ipAddress: string): Promise<SendStatus> {
         // get email time
         // SELECT submitTime FROM message WHERE email = ? ORDER BY submitTime DESC LIMIT 1
         let emailTime = await this.getTimeSinceEmailLastSent(email);
@@ -230,9 +230,9 @@ export class MessageDatabase extends Database {
         }
 
         return { canSend: true };
-    };
+    }
 
-    getAllMessages = async (): Promise<ContactMessage[]> => {
+    async getAllMessages(): Promise<ContactMessage[]> {
         let query = "SELECT * FROM message ORDER BY submitTime DESC;";
         let rows = await this.query(query);
 
@@ -241,9 +241,9 @@ export class MessageDatabase extends Database {
         }
 
         return rows;
-    };
+    }
 
-    deleteMessage = async (email: string, ipAddress: string, submitTime: string): Promise<boolean> => {
+    async deleteMessage(email: string, ipAddress: string, submitTime: string): Promise<boolean> {
         try {
             let query = "DELETE FROM message WHERE email = ? AND ipAddress = ? AND submitTime LIKE ?;";
             let values = [email, ipAddress, `%${submitTime}%`];
@@ -257,5 +257,5 @@ export class MessageDatabase extends Database {
             console.error("Error in MessageDatabase.deleteMessage: " + err.message);
         }
         return false;
-    };
+    }
 }
