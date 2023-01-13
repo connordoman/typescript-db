@@ -20,7 +20,7 @@ export const DB_CONFIG: mysql.PoolOptions = {
     waitForConnections: true,
     connectionLimit: 10,
     queueLimit: 0,
-    timezone: "SYSTEM",
+    timezone: "-08:00",
 };
 
 export class Database {
