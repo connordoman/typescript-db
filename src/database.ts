@@ -165,7 +165,7 @@ export class MessageDatabase extends Database {
         super(options ? options : { ...DB_CONFIG, database: "contact" });
     }
 
-    async nsertMessage(message: ContactMessage): Promise<boolean> {
+    async insertMessage(message: ContactMessage): Promise<boolean> {
         let query =
             "INSERT INTO message (firstName, lastName, email, messageSubject, messageText, submitTime, ipAddress) VALUES (?, ?, ?, ?, ?, CONVERT_TZ(NOW(),'SYSTEM','America/Vancouver'), ?);";
         let values = [
