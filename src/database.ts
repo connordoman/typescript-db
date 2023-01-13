@@ -180,6 +180,22 @@ export class MessageDatabase extends Database {
         return result && result.affectedRows > 0;
     }
 
+    async deleteMessage(email: string, ipAddress: string, submitTime: string): Promise<boolean> {
+        try {
+            let query = "DELETE FROM message WHERE email = ? AND ipAddress = ? AND submitTime LIKE ?;";
+            let values = [email, ipAddress, `%${submitTime}%`];
+
+            let result = await this.query(query, values);
+
+            if (result) {
+                return result.affectedRows === 1;
+            }
+        } catch (err: any) {
+            console.error("Error in MessageDatabase.deleteMessage: " + err.message);
+        }
+        return false;
+    }
+
     async getTimeSinceEmailLastSent(email: string): Promise<number> {
         let query =
             "SELECT NOW() - submitTime AS timeSince FROM message WHERE email = ? ORDER BY submitTime DESC LIMIT 1";
@@ -241,21 +257,5 @@ export class MessageDatabase extends Database {
         }
 
         return rows;
-    }
-
-    async deleteMessage(email: string, ipAddress: string, submitTime: string): Promise<boolean> {
-        try {
-            let query = "DELETE FROM message WHERE email = ? AND ipAddress = ? AND submitTime LIKE ?;";
-            let values = [email, ipAddress, `%${submitTime}%`];
-
-            let result = await this.query(query, values);
-
-            if (result) {
-                return result.affectedRows === 1;
-            }
-        } catch (err: any) {
-            console.error("Error in MessageDatabase.deleteMessage: " + err.message);
-        }
-        return false;
     }
 }
