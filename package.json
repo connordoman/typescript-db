@@ -1,8 +1,8 @@
 {
-    "name": "connordoman",
+    "name": "cd-db",
     "version": "0.2.0",
     "private": true,
-    "description": "A simple database connection library for TypeScript",
+    "description": "A simple database connection library for TypeScript.",
     "license": "UNLICENSED",
     "scripts": {
         "build": "tsc",
@@ -12,15 +12,13 @@
     },
     "dependencies": {
         "@types/node": "^18.11.18",
-        "mysql2": "^2.3.3"
+        "@types/pg": "^8.10.2",
+        "mysql2": "^2.3.3",
+        "pg": "^8.11.0"
     },
     "devDependencies": {
         "dotenv": "^16.0.3",
         "typescript": "^4.9.4"
     },
-    "files": [
-        "database.js",
-        "database.d.ts"
-    ],
     "type": "module"
 }

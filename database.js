@@ -174,6 +174,7 @@ export class MessageDatabase extends Database {
                 let query = "DELETE FROM message WHERE email = ? AND ipAddress = ? AND submitTime = ?;";
                 let values = [email, ipAddress, submitTime];
                 let result = yield this.query(query, values);
+                console.log(`Deleting with query: ${result.query}`);
                 if (result) {
                     return result.affectedRows === 1;
                 }
