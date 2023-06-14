@@ -17,7 +17,7 @@ export class PostgresDatabase {
     }
 
     async connect(): Promise<boolean> {
-        if (this.inTransaction || this.connected) return true;
+        if (this.connected) return true;
         try {
             await this.client.connect();
             console.log("Connected to Postgres");
