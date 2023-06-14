@@ -8,6 +8,7 @@ import { Client, ClientConfig, QueryResult } from "pg";
 export class PostgresDatabase {
     config: ClientConfig;
     client: Client;
+    connected: boolean = false;
     inTransaction: boolean = false;
 
     constructor(config: ClientConfig) {
@@ -15,13 +16,31 @@ export class PostgresDatabase {
         this.client = new Client(config);
     }
 
-    async connect() {
-        await this.client.connect();
-        console.log("Connected to Postgres");
+    async connect(): Promise<boolean> {
+        if (this.inTransaction || this.connected) return true;
+        try {
+            await this.client.connect();
+            console.log("Connected to Postgres");
+        } catch (err) {
+            console.error(`Could not connect to Postgres: ${err}`);
+            return false;
+        }
+        this.connected = true;
+        return true;
     }
-
-    async disconnect() {
-        if (!this.inTransaction) await this.client.end();
+    
+    async disconnect(): Promise<boolean> {
+        if (this.inTransaction) return false;
+        else if (!this.connected) return true;
+        try {
+            await this.client.end();
+            console.log("Disconnected from Postgres");
+        } catch (err) {
+            console.error(`Could not disconnect from Postgres: ${err}`);
+            return false;
+        }
+        this.connected = false;
+        return true;
     }
 
     async query(query: string, values?: any[]): Promise<QueryResult<any>> {
@@ -30,13 +49,12 @@ export class PostgresDatabase {
             return res;
         } catch (err) {
             console.error(err);
-        } finally {
-            this.disconnect();
         }
         return { rows: [], command: "", rowCount: 0, oid: 0, fields: [] };
     }
 
     async begin() {
+        if (!this.connected) this.connect();
         await this.query("BEGIN");
         this.inTransaction = true;
     }

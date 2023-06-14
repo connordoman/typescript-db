@@ -14,38 +14,61 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 import { Client } from "pg";
 export class PostgresDatabase {
     constructor(config) {
+        this.connected = false;
         this.inTransaction = false;
         this.config = config;
         this.client = new Client(config);
     }
     connect() {
         return __awaiter(this, void 0, void 0, function* () {
-            yield this.client.connect();
-            console.log("Connected to Postgres");
+            if (this.inTransaction || this.connected)
+                return true;
+            try {
+                yield this.client.connect();
+                console.log("Connected to Postgres");
+            }
+            catch (err) {
+                console.error(`Could not connect to Postgres: ${err}`);
+                return false;
+            }
+            this.connected = true;
+            return true;
         });
     }
     disconnect() {
         return __awaiter(this, void 0, void 0, function* () {
-            if (!this.inTransaction)
+            if (this.inTransaction)
+                return false;
+            else if (!this.connected)
+                return true;
+            try {
                 yield this.client.end();
+                console.log("Disconnected from Postgres");
+            }
+            catch (err) {
+                console.error(`Could not disconnect from Postgres: ${err}`);
+                return false;
+            }
+            this.connected = false;
+            return true;
         });
     }
     query(query, values) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const res = yield this.client.query(query, values);
-                return res.rows;
+                return res;
             }
             catch (err) {
                 console.error(err);
             }
-            finally {
-                this.disconnect();
-            }
+            return { rows: [], command: "", rowCount: 0, oid: 0, fields: [] };
         });
     }
     begin() {
         return __awaiter(this, void 0, void 0, function* () {
+            if (!this.connected)
+                this.connect();
             yield this.query("BEGIN");
             this.inTransaction = true;
         });
@@ -66,9 +89,9 @@ export class PostgresDatabase {
     }
     serverTime() {
         return __awaiter(this, void 0, void 0, function* () {
-            const res = yield this.query("SELECT NOW()");
-            if (res)
-                return res[0].now;
+            const { rows } = yield this.query("SELECT NOW()");
+            if (rows)
+                return rows[0].now;
             return "[Time Not Found]";
         });
     }
