@@ -3,23 +3,29 @@
  * Copyright (c) 2023 Connor Doman
  */
 
-import { Client, ClientConfig, QueryResult } from "pg";
+import { Client, ClientConfig, Pool, QueryResult } from "pg";
 
 export class PostgresDatabase {
     config: ClientConfig;
     client: Client;
+    pool?: Pool;
     connected: boolean = false;
     inTransaction: boolean = false;
 
-    constructor(config: ClientConfig) {
+
+    constructor(config: ClientConfig, pool?: boolean) {
         this.config = config;
         this.client = new Client(config);
+        if (pool) {
+            this.pool = new Pool(config);
+        }
     }
 
     async connect(): Promise<boolean> {
         if (this.connected) return true;
         try {
-            await this.client.connect();
+            if (this.pool) await this.pool.connect();
+            else await this.client.connect();
             console.log("Connected to Postgres");
         } catch (err) {
             console.error(`Could not connect to Postgres: ${err}`);
@@ -33,7 +39,8 @@ export class PostgresDatabase {
         if (this.inTransaction) return false;
         else if (!this.connected) return true;
         try {
-            await this.client.end();
+            if (this.pool) await this.pool.end();
+            else await this.client.end();
             console.log("Disconnected from Postgres");
         } catch (err) {
             console.error(`Could not disconnect from Postgres: ${err}`);
@@ -45,8 +52,8 @@ export class PostgresDatabase {
 
     async query(query: string, values?: any[]): Promise<QueryResult<any>> {
         try {
-            const res: QueryResult<any> = await this.client.query(query, values);
-            return res;
+            if (this.pool) return await this.pool.query(query, values);
+            else return await this.client.query(query, values);
         } catch (err) {
             console.error(err);
         }
