@@ -54,7 +54,7 @@ export class PostgresDatabase {
     }
 
     async begin() {
-        if (!this.connected) this.connect();
+        if (!this.connected) await this.connect();
         await this.query("BEGIN");
         this.inTransaction = true;
     }
