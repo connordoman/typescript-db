@@ -24,15 +24,16 @@ export class PostgresDatabase {
         if (!this.inTransaction) await this.client.end();
     }
 
-    async query(query: string, values?: any[]) {
+    async query(query: string, values?: any[]): Promise<QueryResult<any>> {
         try {
-            const res: QueryResult = await this.client.query(query, values);
-            return res.rows;
+            const res: QueryResult<any> = await this.client.query(query, values);
+            return res;
         } catch (err) {
             console.error(err);
         } finally {
             this.disconnect();
         }
+        return { rows: [], command: "", rowCount: 0, oid: 0, fields: [] };
     }
 
     async begin() {
@@ -53,8 +54,8 @@ export class PostgresDatabase {
     }
 
     async serverTime(): Promise<string> {
-        const res = await this.query("SELECT NOW()");
-        if (res) return res[0].now;
+        const {rows} = await this.query("SELECT NOW()");
+        if (rows) return rows[0].now;
         return "[Time Not Found]";
     }
 
