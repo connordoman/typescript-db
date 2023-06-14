@@ -54,7 +54,7 @@ export class PostgresDatabase {
     }
 
     async begin() {
-        if (!this.connected) await this.connect();
+        // if (!this.connected) await this.connect();
         await this.query("BEGIN");
         this.inTransaction = true;
     }
@@ -62,13 +62,13 @@ export class PostgresDatabase {
     async commit() {
         await this.query("COMMIT");
         this.inTransaction = false;
-        await this.disconnect();
+        // await this.disconnect();
     }
 
     async rollback() {
         await this.query("ROLLBACK");
         this.inTransaction = false;
-        await this.disconnect();
+        // await this.disconnect();
     }
 
     async serverTime(): Promise<string> {
