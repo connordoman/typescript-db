@@ -12,7 +12,7 @@ export class PostgresDatabase {
     connected: boolean = false;
     inTransaction: boolean = false;
     timezone: string;
-
+    locale: string;
 
     constructor(config: ClientConfig, pool?: boolean) {
         this.config = config;
@@ -21,6 +21,7 @@ export class PostgresDatabase {
             this.pool = new Pool(config);
         }
         this.timezone = "UTC";
+        this.locale = "en-GB";
     }
 
     async connect(): Promise<boolean> {
@@ -82,7 +83,8 @@ export class PostgresDatabase {
 
     async serverTime(): Promise<string> {
         const {rows} = await this.query("SELECT NOW()");
-        if (rows) return new Date(rows[0].now).toLocaleDateString("en-US", {timeZone: this.timezone});
+        const date = new Date(rows[0].now);
+        if (rows) return date.toLocaleDateString(this.locale, {timeZone: this.timezone}) + " " + date.toLocaleTimeString(this.locale, {timeZone: this.timezone});
         return "[Time Not Found]";
     }
 
