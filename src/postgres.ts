@@ -84,7 +84,7 @@ export class PostgresDatabase {
     async serverTime(): Promise<string> {
         const {rows} = await this.query("SELECT NOW()");
         const date = new Date(rows[0].now);
-        if (rows) return date.toLocaleDateString(this.locale, {timeZone: this.timezone}) + " " + date.toLocaleTimeString(this.locale, {timeZone: this.timezone});
+        if (rows) return date.toLocaleString(this.locale, {timeZone: this.timezone});
         return "[Time Not Found]";
     }
 
