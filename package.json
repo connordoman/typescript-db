@@ -1,6 +1,6 @@
 {
     "name": "cd-db",
-    "version": "1.1.0",
+    "version": "1.1.2",
     "private": true,
     "description": "A simple database connection library for TypeScript.",
     "license": "UNLICENSED",
